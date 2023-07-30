@@ -1,4 +1,4 @@
-package com.kagayaku.kagayaku
+package com.kagayakuorg.kagayaku
 
 import io.flutter.embedding.android.FlutterActivity
 
