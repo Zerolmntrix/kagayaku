@@ -1,15 +1,26 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/widgets/toolbar.dart';
 
-class DiscoverToolbar extends StatelessWidget with Toolbar {
-  const DiscoverToolbar({super.key});
+class DiscoverToolbar implements Toolbar {
+  const DiscoverToolbar();
 
   @override
-  Widget build(BuildContext context) {
+  final title = 'Discover';
+
+  @override
+  AppBar android() {
     return AppBar(
-      title: const Text('Discover'),
+      title: Text(title),
       actions: const [],
+    );
+  }
+
+  @override
+  CupertinoNavigationBar ios() {
+    return CupertinoNavigationBar(
+      middle: Text(title),
     );
   }
 }

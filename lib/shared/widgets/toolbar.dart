@@ -1,6 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-mixin Toolbar implements PreferredSizeWidget {
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+abstract class Toolbar {
+  const Toolbar();
+
+  final title = '';
+
+  AppBar android();
+
+  CupertinoNavigationBar ios();
 }

@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../shared/svgs/svgs.dart';
 import '../../shared/widgets/novel.dart';
+import '../../shared/widgets/scaffold.dart';
 import 'widgets/novel_flex_view.dart';
 import 'widgets/spotlight.dart';
 import 'widgets/toolbar.dart';
@@ -14,8 +16,8 @@ class DiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isEmpty) {
-      return const Scaffold(
-        appBar: DiscoverToolbar(),
+      return const AppScaffold(
+        toolbar: DiscoverToolbar(),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -28,8 +30,8 @@ class DiscoverScreen extends StatelessWidget {
       );
     }
 
-    return Scaffold(
-      appBar: const DiscoverToolbar(),
+    return AppScaffold(
+      toolbar: const DiscoverToolbar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -37,31 +39,26 @@ class DiscoverScreen extends StatelessWidget {
             NovelFlexView(
               title: 'Latest Novels',
               novels: novels,
-              builder: (novel) {
-                return Novel(
-                  cover: novel['cover'],
-                  title: novel['title'],
-                  unread: 12,
-                  inkWell: const InkWell(),
-                );
-              },
+              builder: _novelBuilder,
             ),
             const SizedBox(height: 10),
             NovelFlexView(
               title: 'Popular Novels',
               novels: novels,
-              builder: (novel) {
-                return Novel(
-                  cover: novel['cover'],
-                  title: novel['title'],
-                  unread: 12,
-                  inkWell: const InkWell(),
-                );
-              },
+              builder: _novelBuilder,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Novel _novelBuilder(novel) {
+    return Novel(
+      cover: novel['cover'],
+      title: novel['title'],
+      unread: 12,
+      inkWell: const InkWell(),
     );
   }
 }
