@@ -13,8 +13,13 @@ class AppTheme {
     final colorScheme = _getColorScheme(theme);
 
     return ThemeData.from(
-      colorScheme: colorScheme,
       useMaterial3: true,
+      colorScheme: colorScheme,
+    ).copyWith(
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
     );
   }
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../data/source_data.dart';
+import '../../../shared/svgs/svgs.dart';
 import '../../../shared/theme/styles.dart';
 
 class Spotlight extends StatefulWidget {
@@ -16,17 +17,18 @@ class Spotlight extends StatefulWidget {
 
 class _SpotlightState extends State<Spotlight> {
   late PageController controller;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
     controller = PageController();
-    Timer.periodic(const Duration(seconds: 4), (_) => _spotlightAnimation());
   }
 
   @override
   void dispose() {
     controller.dispose();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -34,30 +36,32 @@ class _SpotlightState extends State<Spotlight> {
   Widget build(BuildContext context) {
     final novels = widget.novels;
     final colorScheme = Theme.of(context).colorScheme;
+    const spotlightHeight = 240.0;
+
+    if (novels.isEmpty) {
+      return Container(
+        height: spotlightHeight,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: colorScheme.onSurface.withOpacity(0.1),
+        ),
+        child: const Center(
+          child: Logo(height: 120),
+        ),
+      );
+    }
+
+    startTimer();
 
     return SizedBox(
-      height: 240,
+      height: spotlightHeight,
       child: PageView.builder(
         itemCount: novels.length,
         controller: controller,
+        onPageChanged: (_) => startTimer(),
         itemBuilder: (_, index) {
           final novel = novels[index];
-
-          if (novels.isEmpty) {
-            return Container(
-              margin: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: colorScheme.onSurface.withOpacity(0.1),
-              ),
-              child: const Center(
-                child: Text(
-                  'No novels found',
-                ),
-              ),
-            );
-          }
-
           return AnimatedBuilder(
             animation: controller,
             builder: (context, child) => child!,
@@ -65,6 +69,15 @@ class _SpotlightState extends State<Spotlight> {
           );
         },
       ),
+    );
+  }
+
+  void startTimer() {
+    timer?.cancel();
+
+    timer = Timer.periodic(
+      const Duration(seconds: 4),
+      (_) => _spotlightAnimation(),
     );
   }
 

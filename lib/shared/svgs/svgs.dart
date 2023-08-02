@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 part 'empty_discover.dart';
+part 'logo.dart';
 
 abstract class _SVG extends StatelessWidget {
   const _SVG({super.key, this.width, this.height});
