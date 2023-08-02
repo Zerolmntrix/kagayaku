@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/svgs/svgs.dart';
+import '../../shared/widgets/novel.dart';
+import 'widgets/novel_flex_view.dart';
+import 'widgets/spotlight.dart';
 import 'widgets/toolbar.dart';
 
 class DiscoverScreen extends StatelessWidget {
   const DiscoverScreen({super.key});
 
-  final isEmpty = true;
+  final isEmpty = !true;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +28,73 @@ class DiscoverScreen extends StatelessWidget {
       );
     }
 
-    return const Scaffold(
-      appBar: DiscoverToolbar(),
-      body: Column(
-        children: [],
+    return Scaffold(
+      appBar: const DiscoverToolbar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Spotlight(novels: novels),
+            NovelFlexView(
+              title: 'Latest Novels',
+              novels: novels,
+              builder: (novel) {
+                return Novel(
+                  cover: novel['cover'],
+                  title: novel['title'],
+                  unread: 12,
+                  inkWell: const InkWell(),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            NovelFlexView(
+              title: 'Popular Novels',
+              novels: novels,
+              builder: (novel) {
+                return Novel(
+                  cover: novel['cover'],
+                  title: novel['title'],
+                  unread: 12,
+                  inkWell: const InkWell(),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+final novels = [
+  {
+    'cover':
+        'https://i2.wp.com/centralnovel.com/wp-content/uploads/2021/11/The-Beginning-After-The-End-capa.jpg',
+    'title': 'The Beginning After The End',
+  },
+  {
+    'cover':
+        'https://i2.wp.com/centralnovel.com/wp-content/uploads/2021/11/The-Beginning-After-The-End-capa.jpg',
+    'title': 'The Beginning After The End',
+  },
+  {
+    'cover':
+        'https://i2.wp.com/centralnovel.com/wp-content/uploads/2021/11/The-Beginning-After-The-End-capa.jpg',
+    'title': 'The Beginning After The End',
+  },
+  {
+    'cover':
+        'https://i2.wp.com/centralnovel.com/wp-content/uploads/2021/11/The-Beginning-After-The-End-capa.jpg',
+    'title': 'The Beginning After The End',
+  },
+  {
+    'cover':
+        'https://i2.wp.com/centralnovel.com/wp-content/uploads/2021/11/The-Beginning-After-The-End-capa.jpg',
+    'title': 'The Beginning After The End',
+  },
+  {
+    'cover':
+        'https://i2.wp.com/centralnovel.com/wp-content/uploads/2021/11/The-Beginning-After-The-End-capa.jpg',
+    'title': 'The Beginning After The End',
+  },
+];
