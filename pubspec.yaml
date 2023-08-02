@@ -17,6 +17,8 @@ dependencies:
 
   # core
   go_router: ^10.0.0
+  html: ^0.15.4
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
