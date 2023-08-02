@@ -12,20 +12,23 @@ class MoreButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     const buttonText = 'More';
 
-    if (!Platform.isIOS) {
-      return SizedBox(
-        height: 25,
-        width: 50,
-        child: CupertinoButton(
-          onPressed: _onPressed,
-          pressedOpacity: 0.7,
-          padding: EdgeInsets.zero,
-          borderRadius: BorderRadius.circular(50),
-          color: colorScheme.primaryContainer,
-          child: Text(
-            buttonText.toUpperCase(),
-            style: textTheme.labelMedium?.copyWith(
-              color: colorScheme.primary,
+    if (Platform.isIOS) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 2.0),
+        child: SizedBox(
+          height: 25,
+          width: 50,
+          child: CupertinoButton(
+            onPressed: _onPressed,
+            pressedOpacity: 0.7,
+            padding: EdgeInsets.zero,
+            borderRadius: BorderRadius.circular(50),
+            color: colorScheme.primaryContainer,
+            child: Text(
+              buttonText.toUpperCase(),
+              style: textTheme.labelSmall?.copyWith(
+                color: colorScheme.primary,
+              ),
             ),
           ),
         ),
@@ -41,7 +44,7 @@ class MoreButton extends StatelessWidget {
       child: Text(
         buttonText,
         style: textTheme.labelMedium?.copyWith(
-          color: colorScheme.secondary,
+          color: colorScheme.primary,
         ),
       ),
     );

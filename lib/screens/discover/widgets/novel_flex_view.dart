@@ -23,11 +23,11 @@ class NovelFlexView extends NovelGridView {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
-                textAlign: TextAlign.left,
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),

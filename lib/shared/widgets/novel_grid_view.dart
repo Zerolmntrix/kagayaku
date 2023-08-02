@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../data/source_data.dart';
 import 'novel.dart';
 
 class NovelGridView extends StatelessWidget {
   const NovelGridView({super.key, required this.novels, required this.builder});
 
-  final List<NovelPropType> novels;
-  final Novel Function(NovelPropType novel) builder;
+  final List<NovelModel> novels;
+  final Novel Function(NovelModel novel) builder;
 
   @override
   Widget build(BuildContext context) {

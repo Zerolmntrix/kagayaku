@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../data/source_data.dart';
 import '../../../shared/theme/styles.dart';
-import '../../../shared/widgets/novel.dart';
 
 class Spotlight extends StatefulWidget {
-  const Spotlight({super.key, this.novels = const []});
+  const Spotlight({super.key, required this.novels});
 
-  final List<NovelPropType> novels;
+  final List<NovelModel> novels;
 
   @override
   State<Spotlight> createState() => _SpotlightState();
@@ -33,7 +33,7 @@ class _SpotlightState extends State<Spotlight> {
   @override
   Widget build(BuildContext context) {
     final novels = widget.novels;
-    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return SizedBox(
       height: 240,
@@ -41,54 +41,27 @@ class _SpotlightState extends State<Spotlight> {
         itemCount: novels.length,
         controller: controller,
         itemBuilder: (_, index) {
-          return AnimatedBuilder(
-            animation: controller,
-            builder: (context, child) => child!,
-            child: Container(
+          final novel = novels[index];
+
+          if (novels.isEmpty) {
+            return Container(
               margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(novels[index]['cover']),
-                  alignment: Alignment.topCenter,
-                  fit: BoxFit.cover,
+                color: colorScheme.onSurface.withOpacity(0.1),
+              ),
+              child: const Center(
+                child: Text(
+                  'No novels found',
                 ),
               ),
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.transparent,
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.1),
-                          Colors.black.withOpacity(0.3),
-                          Colors.black.withOpacity(0.7),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        novels[index]['title'],
-                        style: textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            );
+          }
+
+          return AnimatedBuilder(
+            animation: controller,
+            builder: (context, child) => child!,
+            child: NovelBanner(novel: novel),
           );
         },
       ),
@@ -111,6 +84,63 @@ class _SpotlightState extends State<Spotlight> {
       index,
       duration: animationDuration,
       curve: Curves.easeIn,
+    );
+  }
+}
+
+class NovelBanner extends StatelessWidget {
+  const NovelBanner({super.key, required this.novel});
+
+  final NovelModel novel;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        image: DecorationImage(
+          image: NetworkImage(novel.cover),
+          alignment: Alignment.topCenter,
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.transparent,
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.1),
+                  Colors.black.withOpacity(0.3),
+                  Colors.black.withOpacity(0.7),
+                ],
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                novel.title,
+                style: textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

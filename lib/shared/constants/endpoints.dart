@@ -5,4 +5,6 @@ abstract class Endpoints {
 
   static const String modulesList = '$_baseUrl/modules.json';
   static const String modulesDir = '$_baseUrl/modules';
+  static const String test =
+      'https://raw.githubusercontent.com/Zerolmntrix/test_repo/main/module.kaya';
 }

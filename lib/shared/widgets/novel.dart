@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-typedef NovelPropType = Map<String, dynamic>;
 const novelBorderRadius = BorderRadius.all(Radius.circular(10));
 
 class Novel extends StatelessWidget {
@@ -87,6 +86,7 @@ class Novel extends StatelessWidget {
 
 class UnreadBadge extends StatelessWidget {
   const UnreadBadge(this.unread, {super.key});
+
   final int unread;
 
   @override
