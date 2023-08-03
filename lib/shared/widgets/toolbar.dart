@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 abstract class Toolbar {
   const Toolbar();
 
-  final title = '';
+  final String title = '';
 
   AppBar android();
 

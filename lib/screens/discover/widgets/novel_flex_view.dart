@@ -2,26 +2,25 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../shared/widgets/novel_grid_view.dart';
+import '../../../shared/widgets/novel.dart';
+import '../provider/provider.dart';
+import 'empty_list.dart';
 import 'more_button.dart';
 
-class NovelFlexView extends NovelGridView {
-  const NovelFlexView({
-    super.key,
-    required this.title,
-    required this.isLoading,
-    required super.novels,
-    required super.builder,
-  });
+class NovelFlexView extends ConsumerWidget {
+  const NovelFlexView({super.key, required this.title, required this.novels});
 
   final String title;
-  final bool isLoading;
+  final List novels;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+
+    final isLoading = ref.watch(discoverProvider.select((v) => v.isLoading));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,12 +37,12 @@ class NovelFlexView extends NovelGridView {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const MoreButton(),
+              MoreButton(title.split(' ').first.toLowerCase()),
             ],
           ),
         ),
         const SizedBox(height: 4),
-        if (isLoading)
+        if (isLoading && novels.isEmpty)
           SizedBox(
             height: 200,
             child: Center(
@@ -58,7 +57,7 @@ class NovelFlexView extends NovelGridView {
                     ),
             ),
           ),
-        if (!isLoading)
+        if (!isLoading || novels.isNotEmpty)
           SizedBox(
             height: 200,
             child: novels.isNotEmpty
@@ -67,33 +66,20 @@ class NovelFlexView extends NovelGridView {
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     itemCount: novels.length,
                     itemBuilder: (context, index) {
+                      final novel = novels[index];
+
                       return Container(
                         width: 150,
                         margin: const EdgeInsets.symmetric(horizontal: 5),
-                        child: builder(novels[index]),
+                        child: Novel(
+                          cover: novel.cover,
+                          title: novel.title,
+                          inkWell: const InkWell(),
+                        ),
                       );
                     },
                   )
-                : Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Platform.isAndroid
-                              ? Icons.error_outline
-                              : CupertinoIcons.exclamationmark_circle,
-                          size: 50,
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                        Text(
-                          'No novels found.',
-                          style: textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                : const EmptyList(),
           ),
       ],
     );

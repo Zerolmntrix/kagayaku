@@ -2,7 +2,7 @@ name: kagayaku
 description: Free and open source novel reader for Android and iOS.
 publish_to: 'none'
 repository: https://github.com/Zerolmntrix/kagayaku
-version: 1.1.0-dev
+version: 1.1.1-dev
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -21,6 +21,7 @@ dependencies:
   html: ^0.15.4
   http: ^1.1.0
   connectivity_plus: ^4.0.2
+  flutter_riverpod: ^2.3.6
 
 dev_dependencies:
   flutter_test:

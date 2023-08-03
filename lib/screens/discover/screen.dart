@@ -1,40 +1,34 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../data/source_data.dart';
-import '../../shared/constants/endpoints.dart';
 import '../../shared/svgs/svgs.dart';
 import '../../shared/theme/styles.dart';
-import '../../shared/widgets/novel.dart';
 import '../../shared/widgets/scaffold.dart';
 import '../../utils/snackbar.dart';
+import 'provider/provider.dart';
 import 'widgets/novel_flex_view.dart';
 import 'widgets/spotlight.dart';
 import 'widgets/toolbar.dart';
 
-class DiscoverScreen extends StatefulWidget {
+class DiscoverScreen extends ConsumerStatefulWidget {
   const DiscoverScreen({super.key});
 
   @override
-  State<DiscoverScreen> createState() => _DiscoverScreenState();
+  ConsumerState<DiscoverScreen> createState() => _DiscoverScreenState();
 }
 
-class _DiscoverScreenState extends State<DiscoverScreen> {
+class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   late final RefreshController _controller;
-  SourceData? sourceData;
-  bool isLoading = true;
 
   final isEmpty = !true;
-  final List<NovelModel> spotlightNovels = [];
-  final List<NovelModel> popularNovels = [];
-  final List<NovelModel> latestNovels = [];
 
   @override
   void initState() {
     super.initState();
     _controller = RefreshController(initialRefresh: true);
+    ref.read(discoverProvider.notifier).setSourceData();
   }
 
   @override
@@ -60,6 +54,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       );
     }
 
+    final discoverState = ref.watch(discoverProvider);
+
     return AppScaffold(
       toolbar: const DiscoverToolbar(),
       body: SmartRefresher(
@@ -69,19 +65,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Spotlight(novels: spotlightNovels),
+              Spotlight(novels: discoverState.spotlightNovels),
               NovelFlexView(
-                isLoading: isLoading,
                 title: 'Latest Updates',
-                novels: latestNovels,
-                builder: _novelBuilder,
+                novels: discoverState.latestNovels,
               ),
               const SizedBox(height: 10),
               NovelFlexView(
-                isLoading: isLoading,
                 title: 'Popular Novels',
-                novels: popularNovels,
-                builder: _novelBuilder,
+                novels: discoverState.popularNovels,
               ),
             ],
           ),
@@ -90,44 +82,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Novel _novelBuilder(NovelModel novel) {
-    return Novel(
-      cover: novel.cover,
-      title: novel.title,
-      inkWell: const InkWell(),
-    );
-  }
-
   _loadModuleData() async {
+    ref.read(discoverProvider.notifier).setUnloaded();
+
     final connectivityResult = await (Connectivity().checkConnectivity());
 
     if (connectivityResult == ConnectivityResult.none) {
       _controller.refreshFailed();
       _showMessage('No internet connection');
-      setState(() => isLoading = false);
+      ref.read(discoverProvider.notifier).setLoaded();
       return;
     }
 
-    final response = await http.get(Uri.parse(Endpoints.test));
+    ref.read(discoverProvider.notifier).setSpotlightNovels();
+    ref.read(discoverProvider.notifier).setLatestNovels();
+    ref.read(discoverProvider.notifier).setPopularNovels();
 
-    final kayaContent = response.body.split('\n').map((e) => e.trim()).toList();
-
-    sourceData ??= SourceData(kayaContent);
-
-    final spotlightNovels = await sourceData!.getSpotlightNovels();
-    final latestNovels = await sourceData!.getLatestNovels();
-    final popularNovels = await sourceData!.getPopularNovels();
-
-    final endLatestList = latestNovels.length >= 6 ? 6 : latestNovels.length;
-    final endPopularList = popularNovels.length >= 6 ? 6 : popularNovels.length;
-    final endSpotlightList = latestNovels.length >= 5 ? 5 : latestNovels.length;
-
-    setState(() {
-      this.spotlightNovels.addAll(spotlightNovels.sublist(0, endSpotlightList));
-      this.latestNovels.addAll(latestNovels.sublist(0, endLatestList));
-      this.popularNovels.addAll(popularNovels.sublist(0, endPopularList));
-      isLoading = false;
-    });
+    ref.read(discoverProvider.notifier).setLoaded();
 
     _controller.refreshCompleted();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../screens/discover/more_novels/screen.dart';
 import '../../screens/discover/screen.dart';
 
 abstract class AppRoutes {
@@ -9,6 +10,9 @@ abstract class AppRoutes {
   static const updates = '/updates';
   static const history = '/history';
   static const more = '/more';
+
+  // * Sub routes
+  static const moreNovels = '/discover/more-novels/:list';
 }
 
 abstract class AppRouter {
@@ -19,6 +23,14 @@ abstract class AppRouter {
     initialLocation: AppRoutes.discover,
     routes: [
       _goRoute(AppRoutes.discover, const DiscoverScreen()),
+
+      // * Sub routes
+
+      GoRoute(
+        name: 'more-novels',
+        path: AppRoutes.moreNovels,
+        builder: (context, state) => MoreNovelsScreen(state.extra!.toString()),
+      ),
     ],
   );
 

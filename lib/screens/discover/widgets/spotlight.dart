@@ -145,6 +145,8 @@ class NovelBanner extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: Text(
                 novel.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: textTheme.titleMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
