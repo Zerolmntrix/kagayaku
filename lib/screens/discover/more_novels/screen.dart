@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -6,6 +9,7 @@ import '../../../shared/theme/styles.dart';
 import '../../../shared/widgets/novel.dart';
 import '../../../shared/widgets/novel_grid_view.dart';
 import '../../../shared/widgets/scaffold.dart';
+import '../../../utils/snackbar.dart';
 import '../provider/provider.dart';
 import '../widgets/empty_list.dart';
 import 'widgets/toolbar.dart';
@@ -22,27 +26,22 @@ class MoreNovelsScreen extends ConsumerWidget {
     final novels = ref.watch(discoverProvider.notifier).getNovels(list);
     final controller = RefreshController();
 
-    onRefresh() {
-      if (list == 'latest') {
-        ref.read(discoverProvider.notifier).setLatestNovels();
-      }
-      if (list == 'popular') {
-        ref.read(discoverProvider.notifier).setPopularNovels();
-      }
+    onRefresh() async {
+      ref.read(discoverProvider.notifier).setUnloaded();
 
-      // TODO: Implement error handling
-
-      //   final snackBar = SnackBar(
-      //     content: const Text('No new novels found.'),
-      //     action: SnackBarAction(
-      //       label: 'RETRY',
-      //       onPressed: () {
-      //
-      //       },
-      //     ),
-      //   );
+      try {
+        if (list == 'latest') {
+          await ref.read(discoverProvider.notifier).setLatestNovels();
+        }
+        if (list == 'popular') {
+          await ref.read(discoverProvider.notifier).setPopularNovels();
+        }
+      } catch (e) {
+        showSnackBar(context, 'Failed to load ${title.toLowerCase()}');
+      }
 
       controller.refreshCompleted();
+      ref.read(discoverProvider.notifier).setLoaded();
     }
 
     return AppScaffold(
@@ -51,19 +50,35 @@ class MoreNovelsScreen extends ConsumerWidget {
         controller: controller,
         header: const SmartRefresherHeader(),
         onRefresh: onRefresh,
-        child: SingleChildScrollView(
-          child: novels.isEmpty
-              ? const EmptyList()
-              : NovelGridView(
-                  novels: novels,
-                  builder: (novel) {
-                    return Novel(
-                      title: novel.title,
-                      cover: novel.cover,
-                      inkWell: const InkWell(),
-                    );
-                  },
-                ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: novels.isEmpty
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const EmptyList(),
+                      TextButton.icon(
+                        icon: Icon(
+                          Platform.isAndroid
+                              ? Icons.public
+                              : CupertinoIcons.globe,
+                        ),
+                        onPressed: () {},
+                        label: const Text('WebView'),
+                      ),
+                    ],
+                  )
+                : NovelGridView(
+                    novels: novels,
+                    builder: (novel) {
+                      return Novel(
+                        title: novel.title,
+                        cover: novel.cover,
+                        inkWell: const InkWell(),
+                      );
+                    },
+                  ),
+          ),
         ),
       ),
     );

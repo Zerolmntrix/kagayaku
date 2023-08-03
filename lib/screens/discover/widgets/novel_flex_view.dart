@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,7 +15,6 @@ class NovelFlexView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
 
     final isLoading = ref.watch(discoverProvider.select((v) => v.isLoading));
 
@@ -42,45 +38,29 @@ class NovelFlexView extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 4),
-        if (isLoading && novels.isEmpty)
-          SizedBox(
-            height: 200,
-            child: Center(
-              child: Platform.isAndroid
-                  ? CircularProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      color: colorScheme.primary,
-                    )
-                  : CupertinoActivityIndicator(
-                      radius: 20,
-                      color: colorScheme.primary,
-                    ),
-            ),
-          ),
-        if (!isLoading || novels.isNotEmpty)
-          SizedBox(
-            height: 200,
-            child: novels.isNotEmpty
-                ? ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    itemCount: novels.length,
-                    itemBuilder: (context, index) {
-                      final novel = novels[index];
+        SizedBox(
+          height: 200,
+          child: novels.isNotEmpty && !isLoading
+              ? ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  itemCount: novels.length,
+                  itemBuilder: (context, index) {
+                    final novel = novels[index];
 
-                      return Container(
-                        width: 150,
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Novel(
-                          cover: novel.cover,
-                          title: novel.title,
-                          inkWell: const InkWell(),
-                        ),
-                      );
-                    },
-                  )
-                : const EmptyList(),
-          ),
+                    return Container(
+                      width: 150,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Novel(
+                        cover: novel.cover,
+                        title: novel.title,
+                        inkWell: const InkWell(),
+                      ),
+                    );
+                  },
+                )
+              : const EmptyList(),
+        ),
       ],
     );
   }

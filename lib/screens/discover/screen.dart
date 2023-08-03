@@ -87,21 +87,35 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     final connectivityResult = await (Connectivity().checkConnectivity());
 
     if (connectivityResult == ConnectivityResult.none) {
-      _controller.refreshFailed();
       _showMessage('No internet connection');
-      ref.read(discoverProvider.notifier).setLoaded();
       return;
     }
 
-    await ref.read(discoverProvider.notifier).setSourceData();
+    try {
+      await ref.read(discoverProvider.notifier).setSourceData();
+    } catch (e) {
+      _showMessage('Failed to load module');
+      return;
+    }
 
-    await ref.read(discoverProvider.notifier).setSpotlightNovels();
-    await ref.read(discoverProvider.notifier).setLatestNovels();
-    await ref.read(discoverProvider.notifier).setPopularNovels();
+    try {
+      await ref.read(discoverProvider.notifier).setSpotlightNovels();
+      await ref.read(discoverProvider.notifier).setLatestNovels();
+      await ref.read(discoverProvider.notifier).setPopularNovels();
+    } catch (e) {
+      _showMessage('Failed to load source data');
+      return;
+    }
 
     _controller.refreshCompleted();
     ref.read(discoverProvider.notifier).setLoaded();
   }
 
-  _showMessage(String message) => showSnackBar(context, message);
+  _showMessage(String message) {
+    _controller.refreshFailed();
+    ref.read(discoverProvider.notifier).setLoaded();
+    showSnackBar(context, message, retry: true, function: () {
+      _controller.requestRefresh();
+    });
+  }
 }

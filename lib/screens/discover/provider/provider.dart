@@ -77,4 +77,7 @@ class DiscoverStateNotifier extends StateNotifier<DiscoverState> {
         return [];
     }
   }
+
+  // TODO: Add source url to source data
+  String get sourceUrl => 'asuralightnovel.com';
 }
