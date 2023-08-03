@@ -28,7 +28,6 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   void initState() {
     super.initState();
     _controller = RefreshController(initialRefresh: true);
-    ref.read(discoverProvider.notifier).setSourceData();
   }
 
   @override
@@ -94,13 +93,14 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
       return;
     }
 
-    ref.read(discoverProvider.notifier).setSpotlightNovels();
-    ref.read(discoverProvider.notifier).setLatestNovels();
-    ref.read(discoverProvider.notifier).setPopularNovels();
+    await ref.read(discoverProvider.notifier).setSourceData();
 
-    ref.read(discoverProvider.notifier).setLoaded();
+    await ref.read(discoverProvider.notifier).setSpotlightNovels();
+    await ref.read(discoverProvider.notifier).setLatestNovels();
+    await ref.read(discoverProvider.notifier).setPopularNovels();
 
     _controller.refreshCompleted();
+    ref.read(discoverProvider.notifier).setLoaded();
   }
 
   _showMessage(String message) => showSnackBar(context, message);

@@ -1,18 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../data/source_data.dart';
-import '../../../shared/constants/endpoints.dart';
+import '../../../utils/get_module.dart';
 
 class DiscoverState {
   DiscoverState();
 
   bool isLoading = true;
 
-  // FIXME: This is a temporary solution to avoid breaking the app
-
-  //! LateInitializationError: Field 'sourceData' has not been initialized.
-  late SourceData sourceData;
+  SourceData sourceData = SourceData([]);
 
   List<NovelModel> spotlightNovels = [];
   List<NovelModel> popularNovels = [];
@@ -42,20 +38,18 @@ final discoverProvider =
 class DiscoverStateNotifier extends StateNotifier<DiscoverState> {
   DiscoverStateNotifier(super._state);
 
-  setSourceData() async {
-    final response = await http.get(Uri.parse(Endpoints.test));
-
-    final kayaContent = response.body.split('\n').map((e) => e.trim()).toList();
-
-    state = state.copyWith(sourceData: SourceData(kayaContent));
-  }
-
   setLoaded() {
     state = state.copyWith(isLoading: false);
   }
 
   setUnloaded() {
     state = state.copyWith(isLoading: true);
+  }
+
+  setSourceData({List<String>? source}) async {
+    final source = await getModuleFromFile();
+    if (state.sourceData == SourceData(source)) return;
+    state = state.copyWith(sourceData: SourceData(source));
   }
 
   setSpotlightNovels() async {
