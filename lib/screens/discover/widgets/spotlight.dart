@@ -35,6 +35,7 @@ class _SpotlightState extends State<Spotlight> {
   @override
   Widget build(BuildContext context) {
     final novels = widget.novels;
+    final limit = novels.length >= 5 ? 5 : novels.length;
     final colorScheme = Theme.of(context).colorScheme;
     const spotlightHeight = 240.0;
 
@@ -57,7 +58,7 @@ class _SpotlightState extends State<Spotlight> {
     return SizedBox(
       height: spotlightHeight,
       child: PageView.builder(
-        itemCount: novels.length,
+        itemCount: limit,
         controller: controller,
         onPageChanged: (_) => startTimer(),
         itemBuilder: (_, index) {

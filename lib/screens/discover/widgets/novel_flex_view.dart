@@ -15,6 +15,7 @@ class NovelFlexView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
+    final limit = novels.length >= 6 ? 6 : novels.length;
 
     final isLoading = ref.watch(discoverProvider.select((v) => v.isLoading));
 
@@ -44,7 +45,7 @@ class NovelFlexView extends ConsumerWidget {
               ? ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  itemCount: novels.length,
+                  itemCount: limit,
                   itemBuilder: (context, index) {
                     final novel = novels[index];
 
