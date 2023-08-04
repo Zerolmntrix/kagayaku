@@ -84,8 +84,9 @@ class _SpotlightState extends State<Spotlight> {
 
   _spotlightAnimation() {
     final int nextPage = controller.page!.round() + 1;
+    final limit = widget.novels.length >= 5 ? 5 : widget.novels.length;
 
-    if (nextPage == widget.novels.length) {
+    if (nextPage == limit) {
       _goToSpotlight(0);
       return;
     }
@@ -117,8 +118,7 @@ class NovelBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
           image: NetworkImage(novel.cover),
-          alignment: Alignment.topCenter,
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         ),
       ),
       child: Stack(
