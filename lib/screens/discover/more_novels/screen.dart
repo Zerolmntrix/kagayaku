@@ -9,7 +9,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../shared/constants/routes.dart';
 import '../../../shared/theme/styles.dart';
 import '../../../shared/widgets/novel.dart';
-import '../../../shared/widgets/novel_grid_view.dart';
 import '../../../shared/widgets/scaffold.dart';
 import '../../../utils/snackbar.dart';
 import '../provider/provider.dart';
@@ -69,17 +68,16 @@ class MoreNovelsScreen extends ConsumerWidget {
                   ),
                 ],
               )
-            : SizedBox.expand(
-                child: NovelGridView(
-                  novels: novels,
-                  builder: (novel) {
-                    return Novel(
-                      title: novel.title,
-                      cover: novel.cover,
-                      inkWell: const InkWell(),
-                    );
-                  },
-                ),
+            : GridView.builder(
+                padding: const EdgeInsets.all(10),
+                gridDelegate: buildGridDelegate(2),
+                itemCount: novels.length,
+                itemBuilder: (context, index) {
+                  return Novel(
+                    cover: novels[index].cover,
+                    title: novels[index].title,
+                  );
+                },
               ),
       ),
     );
