@@ -52,39 +52,36 @@ class MoreNovelsScreen extends ConsumerWidget {
         controller: controller,
         header: const SmartRefresherHeader(),
         onRefresh: onRefresh,
-        child: Center(
-          child: SingleChildScrollView(
-            child: novels.isEmpty
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const EmptyList(),
-                      TextButton.icon(
-                        icon: Icon(
-                          Platform.isAndroid
-                              ? Icons.public
-                              : CupertinoIcons.globe,
-                        ),
-                        onPressed: () => context.push(
-                          AppRoutes.webview,
-                          extra: sourceUrl,
-                        ),
-                        label: const Text('WebView'),
-                      ),
-                    ],
-                  )
-                : NovelGridView(
-                    novels: novels,
-                    builder: (novel) {
-                      return Novel(
-                        title: novel.title,
-                        cover: novel.cover,
-                        inkWell: const InkWell(),
-                      );
-                    },
+        child: novels.isEmpty
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const EmptyList(),
+                  TextButton.icon(
+                    icon: Icon(
+                      Platform.isAndroid ? Icons.public : CupertinoIcons.globe,
+                    ),
+                    onPressed: () => context.push(
+                      AppRoutes.webview,
+                      extra: sourceUrl,
+                    ),
+                    label: const Text('WebView'),
                   ),
-          ),
-        ),
+                ],
+              )
+            : SizedBox.expand(
+                child: NovelGridView(
+                  novels: novels,
+                  builder: (novel) {
+                    return Novel(
+                      title: novel.title,
+                      cover: novel.cover,
+                      inkWell: const InkWell(),
+                    );
+                  },
+                ),
+              ),
       ),
     );
   }
