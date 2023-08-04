@@ -118,7 +118,8 @@ class NovelBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
           image: NetworkImage(novel.cover),
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
+          opacity: 0.9,
         ),
       ),
       child: Stack(
@@ -126,6 +127,10 @@ class NovelBanner extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                image: NetworkImage(novel.cover),
+                fit: BoxFit.fitHeight,
+              ),
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -151,6 +156,13 @@ class NovelBanner extends StatelessWidget {
                 style: textTheme.titleMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  shadows: [
+                    const Shadow(
+                      color: Colors.black,
+                      offset: Offset(2, 2),
+                      blurRadius: 2,
+                    ),
+                  ],
                 ),
               ),
             ),

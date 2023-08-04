@@ -54,7 +54,6 @@ class MoreNovelsScreen extends ConsumerWidget {
         onRefresh: onRefresh,
         child: novels.isEmpty
             ? Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const EmptyList(),
