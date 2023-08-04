@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../screens/discover/more_novels/screen.dart';
 import '../../screens/discover/screen.dart';
+import '../../screens/webview/screen.dart';
 
 abstract class AppRoutes {
   static const discover = '/';
@@ -10,6 +11,7 @@ abstract class AppRoutes {
   static const updates = '/updates';
   static const history = '/history';
   static const more = '/more';
+  static const webview = '/webview';
 
   // * Sub routes
   static const moreNovels = '/discover/more-novels/:list';
@@ -22,14 +24,19 @@ abstract class AppRouter {
     navigatorKey: _rootKey,
     initialLocation: AppRoutes.discover,
     routes: [
+      // * Main routes
       _goRoute(AppRoutes.discover, const DiscoverScreen()),
 
       // * Sub routes
-
       GoRoute(
-        name: 'more-novels',
         path: AppRoutes.moreNovels,
         builder: (context, state) => MoreNovelsScreen(state.extra!.toString()),
+      ),
+
+      // * Complementary routes
+      GoRoute(
+        path: AppRoutes.webview,
+        builder: (context, state) => WebViewScreen(state.extra!.toString()),
       ),
     ],
   );

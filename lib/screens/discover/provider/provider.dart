@@ -66,18 +66,4 @@ class DiscoverStateNotifier extends StateNotifier<DiscoverState> {
     final novels = await state.sourceData.getLatestNovels();
     state = state.copyWith(latestNovels: novels);
   }
-
-  List<NovelModel> getNovels(String list) {
-    switch (list) {
-      case 'popular':
-        return state.popularNovels;
-      case 'latest':
-        return state.latestNovels;
-      default:
-        return [];
-    }
-  }
-
-  // TODO: Add source url to source data
-  String get sourceUrl => 'asuralightnovel.com';
 }

@@ -17,6 +17,8 @@ class WebScraper {
     try {
       final response = await http.get(Uri.parse(endpoint));
 
+      if (response.statusCode != 200) return false;
+
       _document = parse(response.body);
     } catch (e) {
       throw Exception(e.toString());

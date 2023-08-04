@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../shared/constants/routes.dart';
 import '../../../shared/theme/styles.dart';
 import '../../../shared/widgets/novel.dart';
 import '../../../shared/widgets/novel_grid_view.dart';
@@ -23,12 +25,13 @@ class MoreNovelsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final title = list == 'latest' ? 'Latest Novels' : 'Popular Novels';
 
-    final novels = ref.watch(discoverProvider.notifier).getNovels(list);
+    final sourceUrl = ref.read(discoverProvider).sourceData.sourceUrl;
+    final novels = list == 'latest'
+        ? ref.watch(discoverProvider).latestNovels
+        : ref.watch(discoverProvider).popularNovels;
     final controller = RefreshController();
 
     onRefresh() async {
-      ref.read(discoverProvider.notifier).setUnloaded();
-
       try {
         if (list == 'latest') {
           await ref.read(discoverProvider.notifier).setLatestNovels();
@@ -41,7 +44,6 @@ class MoreNovelsScreen extends ConsumerWidget {
       }
 
       controller.refreshCompleted();
-      ref.read(discoverProvider.notifier).setLoaded();
     }
 
     return AppScaffold(
@@ -63,7 +65,10 @@ class MoreNovelsScreen extends ConsumerWidget {
                               ? Icons.public
                               : CupertinoIcons.globe,
                         ),
-                        onPressed: () {},
+                        onPressed: () => context.push(
+                          AppRoutes.webview,
+                          extra: sourceUrl,
+                        ),
                         label: const Text('WebView'),
                       ),
                     ],

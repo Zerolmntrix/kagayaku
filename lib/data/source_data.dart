@@ -7,6 +7,7 @@ class SourceData {
     _readSource();
   }
 
+  late final String sourceUrl;
   final List<String> _kayaContent;
   late final WebScraper _webScraper;
 
@@ -40,7 +41,7 @@ class SourceData {
 
     if (url == null) return novels;
 
-    if (!await _webScraper.loadWebPage(url)) return novels;
+    if (!await _webScraper.loadWebPage(url)) throw Exception('Failed to load');
 
     final selectors = _getSelectors(function);
 
@@ -72,6 +73,7 @@ class SourceData {
       if (line.startsWith('@source')) {
         final baseUrl = line.substring('@source'.length).trim();
         _webScraper = WebScraper(_removeQuotes(baseUrl));
+        sourceUrl = _removeQuotes(baseUrl);
         break;
       }
     }
