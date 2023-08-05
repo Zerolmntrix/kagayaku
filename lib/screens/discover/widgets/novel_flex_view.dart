@@ -75,7 +75,6 @@ class NovelFlexView extends ConsumerWidget {
                         child: Novel(
                           cover: novel.cover,
                           title: novel.title,
-                          inkWell: const InkWell(),
                         ),
                       );
                     },

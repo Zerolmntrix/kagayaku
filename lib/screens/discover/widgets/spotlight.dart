@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../data/source_data.dart';
+import '../../../shared/constants/routes.dart';
 import '../../../shared/svgs/svgs.dart';
 import '../../../shared/theme/styles.dart';
+import '../../../shared/widgets/clickable_element.dart';
 
 class Spotlight extends StatefulWidget {
   const Spotlight({super.key, required this.novels});
@@ -44,7 +47,7 @@ class _SpotlightState extends State<Spotlight> {
         height: spotlightHeight,
         margin: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: borderRadius,
           color: colorScheme.onSurface.withOpacity(0.1),
         ),
         child: const Center(
@@ -115,37 +118,36 @@ class NovelBanner extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: borderRadius,
         image: DecorationImage(
           image: NetworkImage(novel.cover),
           fit: BoxFit.cover,
           opacity: 0.9,
         ),
       ),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                image: NetworkImage(novel.cover),
-                fit: BoxFit.fitHeight,
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.transparent,
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.1),
-                  Colors.black.withOpacity(0.3),
-                  Colors.black.withOpacity(0.7),
-                ],
-              ),
+      child: ClickableElement(
+        onTap: () => context.push(AppRoutes.novel, extra: novel.url),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            image: DecorationImage(
+              image: NetworkImage(novel.cover),
+              fit: BoxFit.fitHeight,
+            ),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.transparent,
+                Colors.transparent,
+                Colors.black.withOpacity(0.1),
+                Colors.black.withOpacity(0.3),
+                Colors.black.withOpacity(0.7),
+              ],
             ),
           ),
-          Align(
+          child: Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -156,18 +158,12 @@ class NovelBanner extends StatelessWidget {
                 style: textTheme.titleMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  shadows: [
-                    const Shadow(
-                      color: Colors.black,
-                      offset: Offset(2, 2),
-                      blurRadius: 2,
-                    ),
-                  ],
+                  shadows: textShadow,
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
