@@ -46,7 +46,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               EmptyDiscover(height: 250),
-              Text('You don\'t have any sources installed yet.'),
+              Text('You don\'t have any modules installed yet.'),
             ],
           ),
         ),
@@ -92,7 +92,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
     }
 
     try {
-      await ref.read(discoverProvider.notifier).setSourceData();
+      await ref.read(discoverProvider.notifier).setSource();
     } catch (e) {
       _showMessage('Failed to load module');
       return;
@@ -103,7 +103,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
       await ref.read(discoverProvider.notifier).setLatestNovels();
       await ref.read(discoverProvider.notifier).setPopularNovels();
     } catch (e) {
-      _showMessage('Failed to load source data');
+      _showMessage('Failed to load module data');
       return;
     }
 

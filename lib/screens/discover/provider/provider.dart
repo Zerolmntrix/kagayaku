@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kagayaku_modules/kagayaku_modules.dart' hide getSourceFromFile;
 
-import '../../../data/source_data.dart';
 import '../../../utils/get_module.dart';
 
 class DiscoverState {
@@ -8,7 +8,7 @@ class DiscoverState {
 
   bool isLoading = true;
 
-  SourceData sourceData = SourceData([]);
+  KagayakuModule module = KagayakuModule([]);
 
   List<NovelModel> spotlightNovels = [];
   List<NovelModel> popularNovels = [];
@@ -16,14 +16,14 @@ class DiscoverState {
 
   DiscoverState copyWith({
     bool? isLoading,
-    SourceData? sourceData,
+    KagayakuModule? module,
     List<NovelModel>? spotlightNovels,
     List<NovelModel>? popularNovels,
     List<NovelModel>? latestNovels,
   }) {
     return DiscoverState()
       ..isLoading = isLoading ?? this.isLoading
-      ..sourceData = sourceData ?? this.sourceData
+      ..module = module ?? this.module
       ..spotlightNovels = spotlightNovels ?? this.spotlightNovels
       ..latestNovels = latestNovels ?? this.latestNovels
       ..popularNovels = popularNovels ?? this.popularNovels;
@@ -46,24 +46,24 @@ class DiscoverStateNotifier extends StateNotifier<DiscoverState> {
     state = state.copyWith(isLoading: true);
   }
 
-  setSourceData({List<String>? source}) async {
-    final source = await getModuleFromFile();
-    if (state.sourceData == SourceData(source)) return;
-    state = state.copyWith(sourceData: SourceData(source));
+  setSource({List<String>? source}) async {
+    final source = await getSourceFromFile();
+    if (state.module == KagayakuModule(source)) return;
+    state = state.copyWith(module: KagayakuModule(source));
   }
 
   setSpotlightNovels() async {
-    final novels = await state.sourceData.getSpotlightNovels();
+    final novels = await state.module.getSpotlightNovels();
     state = state.copyWith(spotlightNovels: novels);
   }
 
   setPopularNovels() async {
-    final novels = await state.sourceData.getPopularNovels();
+    final novels = await state.module.getPopularNovels();
     state = state.copyWith(popularNovels: novels);
   }
 
   setLatestNovels() async {
-    final novels = await state.sourceData.getLatestNovels();
+    final novels = await state.module.getLatestNovels();
     state = state.copyWith(latestNovels: novels);
   }
 }

@@ -208,6 +208,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
+  kagayaku_modules:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: d1c4d4627be63ed95e649d99bb90dee50d5fcaae
+      url: "https://github.com/Zerolmntrix/kagayaku-modules.git"
+    source: git
+    version: "1.0.0"
   lints:
     dependency: transitive
     description:

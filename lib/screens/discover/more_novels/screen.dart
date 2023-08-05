@@ -24,7 +24,7 @@ class MoreNovelsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final title = list == 'latest' ? 'Latest Novels' : 'Popular Novels';
 
-    final sourceUrl = ref.read(discoverProvider).sourceData.sourceUrl;
+    final moduleUrl = ref.read(discoverProvider).module.sourceUrl;
     final novels = list == 'latest'
         ? ref.watch(discoverProvider).latestNovels
         : ref.watch(discoverProvider).popularNovels;
@@ -62,7 +62,7 @@ class MoreNovelsScreen extends ConsumerWidget {
                     ),
                     onPressed: () => context.push(
                       AppRoutes.webview,
-                      extra: sourceUrl,
+                      extra: moduleUrl,
                     ),
                     label: const Text('WebView'),
                   ),

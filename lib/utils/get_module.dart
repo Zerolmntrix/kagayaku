@@ -4,10 +4,15 @@ import '../../../shared/constants/endpoints.dart';
 
 // TODO: Implement getModuleFromFile using device file system
 
-Future<List<String>> getModuleFromFile() async {
-  final response = await http.get(Uri.parse(Endpoints.test));
+Future<List<String>> getSourceFromFile() async {
+  final module = await http.get(Uri.parse(Endpoints.test));
+  final moduleContent = module.body.split('\n');
 
-  final fileContent = response.body.split('\n').map((e) => e.trim()).toList();
+  final moduleContentList = moduleContent
+      .where((element) => element.isNotEmpty)
+      .where((element) => !element.startsWith('//'))
+      .map((e) => e.trim())
+      .toList();
 
-  return fileContent;
+  return moduleContentList;
 }
