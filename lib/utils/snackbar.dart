@@ -6,12 +6,14 @@ showSnackBar(
   VoidCallback? function,
   bool retry = false,
 }) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  final snackBar = SnackBar(
     duration: const Duration(seconds: 3),
     content: Text(message),
     action: SnackBarAction(
       onPressed: function ?? () {},
       label: retry ? "RETRY" : "DISMISS",
     ),
-  ));
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }

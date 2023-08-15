@@ -14,7 +14,7 @@ dependencies:
   kagayaku_modules:
     git:
       url: https://github.com/Zerolmntrix/kagayaku-modules.git
-      ref: main
+      ref: dev
 
   #ui
   cupertino_icons: ^1.0.5

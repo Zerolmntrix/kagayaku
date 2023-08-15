@@ -212,7 +212,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: dev
       resolved-ref: d1c4d4627be63ed95e649d99bb90dee50d5fcaae
       url: "https://github.com/Zerolmntrix/kagayaku-modules.git"
     source: git
