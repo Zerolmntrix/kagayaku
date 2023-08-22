@@ -5,6 +5,8 @@ import 'shared/constants/routes.dart';
 import 'shared/theme/theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

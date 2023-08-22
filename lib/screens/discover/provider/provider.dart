@@ -8,7 +8,7 @@ class DiscoverState {
 
   bool isLoading = true;
 
-  KagayakuModule module = KagayakuModule([]);
+  KagayakuModule module = KagayakuModule([], 'https://kagayaku.vercel.com');
 
   List<NovelModel> spotlightNovels = [];
   List<NovelModel> popularNovels = [];
@@ -48,8 +48,12 @@ class DiscoverStateNotifier extends StateNotifier<DiscoverState> {
 
   setSource({List<String>? source}) async {
     final source = await getSourceFromFile();
-    if (state.module == KagayakuModule(source)) return;
-    state = state.copyWith(module: KagayakuModule(source));
+    if (state.module == KagayakuModule(source, 'https://asuralightnovel.com')) {
+      return;
+    }
+    state = state.copyWith(
+      module: KagayakuModule(source, 'https://asuralightnovel.com'),
+    );
   }
 
   setSpotlightNovels() async {
