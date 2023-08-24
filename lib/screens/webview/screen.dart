@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
+import '../../shared/theme/styles.dart';
 import '../../shared/widgets/scaffold.dart';
 import 'provider/provider.dart';
 import 'widgets/toolbar.dart';
@@ -16,51 +18,62 @@ class WebViewScreen extends ConsumerStatefulWidget {
 }
 
 class _WebViewScreenState extends ConsumerState<WebViewScreen> {
+  final GlobalKey webViewKey = GlobalKey();
+
   String title = 'Kagayaku';
 
   bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    ref.read(webViewProvider)
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (url) {
-            _getPageTitle();
-            setState(() => isLoading = true);
-          },
-          onPageFinished: (url) {
-            _getPageTitle();
-            setState(() => isLoading = false);
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.url));
-  }
+  double progress = 0;
 
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(webViewProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    buildWebView() {
+      return [
+        if (isLoading)
+          LinearPercentIndicator(
+            lineHeight: 4,
+            percent: progress,
+            animation: true,
+            animateFromLastPercent: true,
+            animationDuration: animationDuration.inMilliseconds,
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            backgroundColor: colorScheme.onSurface.withOpacity(0.2),
+            progressColor: colorScheme.secondary,
+          ),
+        Expanded(
+          child: InAppWebView(
+            key: webViewKey,
+            initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+            onWebViewCreated: (controller) {
+              ref.read(webViewProvider.notifier).setController(controller);
+            },
+            onLoadStart: (controller, url) {
+              setState(() => isLoading = true);
+              _getPageTitle();
+            },
+            onProgressChanged: (controller, progress) {
+              setState(() => this.progress = progress / 100);
+            },
+            onLoadStop: (controller, url) {
+              setState(() => isLoading = false);
+              _getPageTitle();
+            },
+          ),
+        )
+      ];
+    }
 
     return AppScaffold(
       toolbar: WebViewToolbar(title, controller),
       body: Column(
-        children: [
-          if (isLoading) const LinearProgressIndicator(minHeight: 4),
-          Expanded(
-            child: WebViewWidget(controller: controller),
-          ),
-        ],
+        children: buildWebView(),
       ),
       iOS: Column(
         children: [
-          if (isLoading) const LinearProgressIndicator(minHeight: 4),
-          Expanded(
-            child: WebViewWidget(controller: controller),
-          ),
+          ...buildWebView(),
           const BottomWebViewToolbar(),
         ],
       ),
@@ -68,7 +81,7 @@ class _WebViewScreenState extends ConsumerState<WebViewScreen> {
   }
 
   _getPageTitle() async {
-    final title = await ref.read(webViewProvider).getTitle();
+    final title = await ref.read(webViewProvider)?.getTitle();
     setState(() => this.title = title ?? this.title);
   }
 }

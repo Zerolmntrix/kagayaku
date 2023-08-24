@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -39,10 +40,26 @@ class MoreNovelsScreen extends ConsumerWidget {
           await ref.read(discoverProvider.notifier).setPopularNovels();
         }
       } catch (e) {
-        showSnackBar(context, 'Failed to load ${title.toLowerCase()}');
+        if (context.mounted) {
+          showSnackBar(context, 'Failed to load ${title.toLowerCase()}');
+        }
       }
 
       controller.refreshCompleted();
+    }
+
+    openWebView() async {
+      final browser = ChromeSafariBrowser();
+
+      if (Platform.isAndroid) {
+        return context.push(AppRoutes.webview, extra: moduleUrl);
+      }
+
+      try {
+        await browser.open(url: WebUri(moduleUrl));
+      } catch (e) {
+        if (context.mounted) context.push(AppRoutes.webview, extra: moduleUrl);
+      }
     }
 
     return AppScaffold(
@@ -60,10 +77,7 @@ class MoreNovelsScreen extends ConsumerWidget {
                     icon: Icon(
                       Platform.isAndroid ? Icons.public : CupertinoIcons.globe,
                     ),
-                    onPressed: () => context.push(
-                      AppRoutes.webview,
-                      extra: moduleUrl,
-                    ),
+                    onPressed: openWebView,
                     label: const Text('WebView'),
                   ),
                 ],

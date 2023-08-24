@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../shared/widgets/toolbar.dart';
 import '../../../utils/ios_dialog.dart';
@@ -15,7 +15,7 @@ enum MenuOptions { refresh, share, openInBrowser }
 class WebViewToolbar implements Toolbar {
   const WebViewToolbar(this.title, this.webViewController);
 
-  final WebViewController webViewController;
+  final InAppWebViewController? webViewController;
 
   @override
   final String title;
@@ -41,7 +41,7 @@ class WebViewToolbar implements Toolbar {
     return CupertinoNavigationBar(
       middle: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: CupertinoButton(
-        onPressed: () => webViewController.reload(),
+        onPressed: () => webViewController?.reload(),
         padding: EdgeInsets.zero,
         child: const Icon(CupertinoIcons.refresh_thick),
       ),
@@ -65,13 +65,13 @@ class _NavigationControlsState extends ConsumerState<NavigationControls> {
     final controller = ref.watch(webViewProvider);
 
     canGoBack() async {
-      final canGoBack = await controller.canGoBack();
-      setState(() => this.canGoBack = canGoBack);
+      final canGoBack = await controller?.canGoBack();
+      setState(() => this.canGoBack = canGoBack ?? false);
     }
 
     canGoForward() async {
-      final canGoForward = await controller.canGoForward();
-      setState(() => this.canGoForward = canGoForward);
+      final canGoForward = await controller?.canGoForward();
+      setState(() => this.canGoForward = canGoForward ?? false);
     }
 
     canGoBack();
@@ -82,14 +82,14 @@ class _NavigationControlsState extends ConsumerState<NavigationControls> {
       children: <Widget>[
         IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: this.canGoBack ? () => controller.goBack() : null,
+          onPressed: this.canGoBack ? () => controller?.goBack() : null,
         ),
         IconButton(
           icon: const Icon(
             Icons.arrow_forward_ios,
             size: 24,
           ),
-          onPressed: this.canGoForward ? () => controller.goForward() : null,
+          onPressed: this.canGoForward ? () => controller?.goForward() : null,
         ),
       ],
     );
@@ -154,13 +154,13 @@ class _BottomWebViewToolbarState extends ConsumerState<BottomWebViewToolbar> {
     final controller = ref.watch(webViewProvider);
 
     canGoBack() async {
-      final canGoBack = await controller.canGoBack();
-      setState(() => this.canGoBack = canGoBack);
+      final canGoBack = await controller?.canGoBack();
+      setState(() => this.canGoBack = canGoBack ?? false);
     }
 
     canGoForward() async {
-      final canGoForward = await controller.canGoForward();
-      setState(() => this.canGoForward = canGoForward);
+      final canGoForward = await controller?.canGoForward();
+      setState(() => this.canGoForward = canGoForward ?? false);
     }
 
     canGoBack();
@@ -189,8 +189,11 @@ class _BottomWebViewToolbarState extends ConsumerState<BottomWebViewToolbar> {
           CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () async {
-              if (await notifier.openInBrowser()) return;
-              if (context.mounted) showBrowserMessage(context);
+              try {
+                await notifier.openInBrowser();
+              } catch (e) {
+                if (context.mounted) showBrowserMessage(context);
+              }
             },
             child: const Icon(CupertinoIcons.compass),
           ),
