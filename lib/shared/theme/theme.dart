@@ -10,11 +10,11 @@ class AppTheme {
   final ThemeMode mode;
 
   ThemeData theme(Themes theme) {
-    final colorScheme = _getColorScheme(theme);
+    final themeScheme = _getThemeScheme(theme);
 
     return ThemeData.from(
       useMaterial3: true,
-      colorScheme: colorScheme,
+      colorScheme: _getThemeMode(themeScheme),
     ).copyWith(
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
@@ -23,12 +23,12 @@ class AppTheme {
     );
   }
 
-  ColorScheme _getColorScheme(Themes theme) {
+  ThemeScheme _getThemeScheme(Themes theme) {
     switch (theme) {
       case Themes.defaultTheme:
-        return _getThemeMode(DefaultScheme());
+        return DefaultScheme();
       default:
-        return _getThemeMode(DefaultScheme());
+        return DefaultScheme();
     }
   }
 
