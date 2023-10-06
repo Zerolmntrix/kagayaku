@@ -31,7 +31,7 @@ class DiscoverState {
 }
 
 final discoverProvider =
-    StateNotifierProvider.autoDispose<DiscoverStateNotifier, DiscoverState>(
+    StateNotifierProvider<DiscoverStateNotifier, DiscoverState>(
   (ref) => DiscoverStateNotifier(DiscoverState()),
 );
 

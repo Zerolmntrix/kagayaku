@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../screens/browse/screen.dart';
 import '../../screens/discover/more_novels/screen.dart';
 import '../../screens/discover/screen.dart';
 import '../../screens/novel/screen.dart';
@@ -10,6 +11,8 @@ abstract class AppRoutes {
   // * Main routes
   static const discover = '/';
   static const library = '/library';
+  static const browse = '/browse';
+
   static const settings = '/settings';
 
   static const novel = '/novel';
@@ -30,6 +33,7 @@ abstract class AppRouter {
     routes: [
       // * Main routes
       _goRoute(AppRoutes.discover, const DiscoverScreen()),
+      _goRoute(AppRoutes.browse, const BrowseScreen()),
 
       GoRoute(
         path: AppRoutes.novel,

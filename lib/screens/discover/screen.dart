@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../shared/constants/routes.dart';
 import '../../shared/svgs/svgs.dart';
 import '../../shared/theme/styles.dart';
+import '../../shared/widgets/navbar.dart';
 import '../../shared/widgets/scaffold.dart';
 import '../../utils/snackbar.dart';
 import 'provider/provider.dart';
@@ -27,7 +29,8 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = RefreshController(initialRefresh: true);
+    final loading = ref.read(discoverProvider).isLoading;
+    _controller = RefreshController(initialRefresh: loading);
   }
 
   @override
@@ -57,6 +60,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
 
     return AppScaffold(
       toolbar: const DiscoverToolbar(),
+      navbar: NavBar(context, route: AppRoutes.discover),
       body: SmartRefresher(
         controller: _controller,
         header: const SmartRefresherHeader(),
@@ -95,6 +99,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
       await ref.read(discoverProvider.notifier).setSource();
     } catch (e) {
       _showMessage('Failed to load module');
+      debugPrint(e.toString());
       return;
     }
 

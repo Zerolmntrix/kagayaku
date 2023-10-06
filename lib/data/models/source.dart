@@ -2,7 +2,8 @@ import '../../shared/constants/db_types.dart';
 
 const tableSources = '''
       CREATE TABLE ${SourceFields.tableName} (
-       ${SourceFields.id} $kTextType PRIMARY KEY,
+       ${SourceFields.id} $kIntType PRIMARY KEY AUTOINCREMENT,
+       ${SourceFields.moduleId} $kTextType,
        ${SourceFields.icon} $kTextType,     
        ${SourceFields.name} $kTextType, 
        ${SourceFields.version} $kTextType, 
@@ -21,6 +22,7 @@ class SourceFields {
 
   static const values = [
     id,
+    moduleId,
     icon,
     name,
     version,
@@ -34,6 +36,7 @@ class SourceFields {
   ];
 
   static const String id = 'id';
+  static const String moduleId = 'moduleId';
   static const String icon = 'icon';
   static const String name = 'name';
   static const String version = 'version';
@@ -47,7 +50,8 @@ class SourceFields {
 }
 
 class Source {
-  final String id;
+  final int? id;
+  final String moduleId;
   final String icon;
   final String name;
   final String version;
@@ -60,7 +64,8 @@ class Source {
   final String path;
 
   Source({
-    required this.id,
+    this.id,
+    required this.moduleId,
     required this.icon,
     required this.name,
     required this.version,
@@ -74,7 +79,8 @@ class Source {
   });
 
   Source copy({
-    String? id,
+    int? id,
+    String? moduleId,
     String? icon,
     String? name,
     String? version,
@@ -88,6 +94,7 @@ class Source {
   }) =>
       Source(
         id: id ?? this.id,
+        moduleId: moduleId ?? this.moduleId,
         icon: icon ?? this.icon,
         name: name ?? this.name,
         version: version ?? this.version,
@@ -102,6 +109,7 @@ class Source {
 
   Map<String, Object?> toJson() => {
         SourceFields.id: id,
+        SourceFields.moduleId: moduleId,
         SourceFields.icon: icon,
         SourceFields.name: name,
         SourceFields.version: version,
@@ -115,7 +123,8 @@ class Source {
       };
 
   static Source fromJson(Map<String, Object?> json) => Source(
-        id: json[SourceFields.id] as String,
+        id: json[SourceFields.id] as int,
+        moduleId: json[SourceFields.moduleId] as String,
         icon: json[SourceFields.icon] as String,
         name: json[SourceFields.name] as String,
         version: json[SourceFields.version] as String,

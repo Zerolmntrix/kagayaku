@@ -4,6 +4,8 @@ class ModuleModel {
   final String name;
   final String version;
   final String language;
+  final String developer;
+  final String baseUrl;
 
   ModuleModel({
     required this.id,
@@ -11,6 +13,8 @@ class ModuleModel {
     required this.name,
     required this.version,
     required this.language,
+    required this.developer,
+    required this.baseUrl,
   });
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) {
@@ -20,10 +24,12 @@ class ModuleModel {
       name: json['name'],
       version: json['version'],
       language: json['language'],
+      developer: json['developer'],
+      baseUrl: json['baseUrl'],
     );
   }
 
-  Map<String, dynamic> toJson(String developer, String baseUrl) {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'icon': icon,
