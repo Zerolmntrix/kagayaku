@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../data/models/module.dart';
 import '../../../data/models/source.dart';
+import '../../../shared/theme/styles.dart';
 import '../provider/provider.dart';
 import 'module.dart';
 
@@ -13,7 +14,8 @@ class SourcesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final installedSources = ref.watch(
-      browseProvider.select((value) => value.sources),
+      browseProvider.select(
+          (value) => value.sources.where((v) => v.isInstalled).toList()),
     );
 
     installedSources.sort((a, b) => a.isPinned == b.isPinned
@@ -38,12 +40,12 @@ class SourcesTab extends ConsumerWidget {
         itemBuilder: (context, index) {
           final source = enabledSources[index];
           return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 400),
+            duration: animationDuration,
             transitionBuilder: (child, animation) {
               return SlideTransition(
                 position: animation.drive(
                   Tween<Offset>(
-                    begin: const Offset(0, 1),
+                    begin: const Offset(1, 0),
                     end: const Offset(0, 0),
                   ),
                 ),

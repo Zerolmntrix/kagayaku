@@ -18,6 +18,7 @@ import '../../../utils/snackbar.dart';
 import '../../../utils/storage.dart';
 import '../provider/provider.dart';
 import 'module.dart';
+import 'settings.dart';
 
 class ModulesTab extends ConsumerStatefulWidget {
   const ModulesTab({super.key});
@@ -48,9 +49,13 @@ class _ModulesTabState extends ConsumerState<ModulesTab> {
 
   @override
   Widget build(BuildContext context) {
-    final installedModules = ref.watch(browseProvider.select((v) => v.sources));
+    final installedModules = ref.watch(browseProvider.select(
+      (v) => v.sources.where((e) => e.isInstalled).toList(),
+    ));
 
     final availableModules = ref.watch(browseProvider.select((v) => v.modules));
+
+    refresh() => _controller.requestRefresh();
 
     return Scrollbar(
       child: SmartRefresher(
@@ -69,17 +74,17 @@ class _ModulesTabState extends ConsumerState<ModulesTab> {
               ),
             ...installedModules.map((source) {
               return _SingleModule(
-                ModuleModel(
-                  id: source.moduleId,
-                  icon: source.icon,
-                  name: source.name,
-                  version: source.version,
-                  language: source.language,
-                  developer: source.developer,
-                  baseUrl: source.baseUrl,
-                ),
-                isInstalled: source.isInstalled,
-              );
+                  ModuleModel(
+                    id: source.moduleId,
+                    icon: source.icon,
+                    name: source.name,
+                    version: source.version,
+                    language: source.language,
+                    developer: source.developer,
+                    baseUrl: source.baseUrl,
+                  ),
+                  isInstalled: source.isInstalled,
+                  refresh: refresh);
             }).toList(),
             if (availableModules.isNotEmpty)
               Padding(
@@ -90,7 +95,7 @@ class _ModulesTabState extends ConsumerState<ModulesTab> {
                 ),
               ),
             for (ModuleModel module in availableModules)
-              _SingleModule(module, isInstalled: false),
+              _SingleModule(module, isInstalled: false, refresh: refresh),
           ],
         ),
       ),
@@ -168,8 +173,13 @@ class _ModulesTabState extends ConsumerState<ModulesTab> {
 class _SingleModule extends ConsumerStatefulWidget {
   final ModuleModel module;
   final bool isInstalled;
+  final Function refresh;
 
-  const _SingleModule(this.module, {required this.isInstalled});
+  const _SingleModule(
+    this.module, {
+    required this.isInstalled,
+    required this.refresh,
+  });
 
   @override
   ConsumerState createState() => _SingleModuleState();
@@ -207,9 +217,9 @@ class _SingleModuleState extends ConsumerState<_SingleModule> {
     // TODO: Add a way to check if has an update
     onModuleTap() async {
       if (isInstalled) {
-        _openModuleSettings(module);
+        _openModuleSettings(module.id);
       } else if (isInstalling) {
-        _cancelInstallation();
+        _cancelInstallation(module.id);
       } else {
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
 
@@ -251,19 +261,49 @@ class _SingleModuleState extends ConsumerState<_SingleModule> {
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
     try {
       Source source = await StorageManager.saveModule(module);
-      await SourceMethods.create(source);
+      try {
+        Source dbSource = await SourceMethods.readSource(source.moduleId);
+        await SourceMethods.update(
+          dbSource.copy(isEnabled: true, isInstalled: true),
+        );
+      } catch (e) {
+        await SourceMethods.create(source);
+      }
+
       sendPort.send("completed");
     } catch (e) {
       sendPort.send("error");
     }
   }
 
-  _cancelInstallation() async {
+  _cancelInstallation(String moduleId) async {
     _installationIsolate?.kill(priority: Isolate.immediate);
+
+    ref.read(browseProvider.notifier).removeSource(moduleId);
+
     _installationPort.sendPort.send("cancelled");
   }
 
-  _openModuleSettings(ModuleModel module) async {}
+  _openModuleSettings(String moduleId) async {
+    final source = await SourceMethods.readSource(moduleId);
+
+    if (!context.mounted) return;
+
+    confirmUninstall(String moduleId) async {
+      setState(() => isInstalled = false);
+      ref.read(browseProvider.notifier).removeSource(moduleId);
+      widget.refresh();
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ModuleSettings(
+        source: source,
+        uninstall: confirmUninstall,
+      ),
+    );
+  }
 
   _onMessage(String message, String module) {
     if (message == "install") {
@@ -273,7 +313,8 @@ class _SingleModuleState extends ConsumerState<_SingleModule> {
         isInstalling = false;
         isInstalled = true;
       });
-      ref.read(browseProvider.notifier).setSources();
+      final modules = ref.read(browseProvider.select((v) => v.modules));
+      ref.read(browseProvider.notifier).setModules(modules);
       show('Installed: $module');
     } else if (message == "cancelled") {
       setState(() => isInstalling = false);

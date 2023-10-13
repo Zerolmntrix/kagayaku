@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../data/methods/source.dart';
 import '../data/models/module.dart';
 import '../data/models/source.dart';
 import '../shared/constants/endpoints.dart';
@@ -56,6 +57,26 @@ class StorageManager {
     } catch (e) {
       debugPrint('Error while saving files: $e');
       rethrow;
+    }
+  }
+
+  static Future<Source?> removeModule(String moduleId) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final targetDirectory = Directory(
+      join(directory.path, 'modules', moduleId),
+    );
+
+    try {
+      final source = await SourceMethods.readSource(moduleId);
+
+      if (!targetDirectory.existsSync()) return null;
+
+      await targetDirectory.delete(recursive: true);
+
+      return source;
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
     }
   }
 }

@@ -4,6 +4,7 @@ import '../../../data/methods/source.dart';
 import '../../../data/models/module.dart';
 import '../../../data/models/source.dart';
 import '../../../utils/database.dart';
+import '../../../utils/storage.dart';
 
 class BrowseState {
   List<Source> sources = [];
@@ -45,20 +46,45 @@ class BrowseStateNotifier extends StateNotifier<BrowseState> {
   setModules(List<ModuleModel> modules) async {
     final sources = await SourceMethods.readAllSources();
 
+    final installedSources = sources
+        .where(
+          (source) => source.isInstalled == true,
+        )
+        .toList();
+
     final availableModules = modules
         .where(
           (module) => !sources.any((source) => source.moduleId == module.id),
         )
         .toList();
 
-    availableModules.sort((a, b) => a.name.compareTo(b.name));
+    final unistalledSources = modules
+        .where((module) => sources.any(
+              (source) => !source.isInstalled && source.moduleId == module.id,
+            ))
+        .toList();
 
-    state = state.copyWith(modules: availableModules, loaded: true);
+    availableModules
+      ..addAll(unistalledSources)
+      ..sort((a, b) => a.name.compareTo(b.name));
+
+    state = state.copyWith(
+      sources: installedSources,
+      modules: availableModules,
+      loaded: true,
+    );
   }
 
-  addSource(Source source) async {
-    await SourceMethods.create(source);
-    setSources();
+  removeSource(String moduleId) async {
+    Source? source = await StorageManager.removeModule(moduleId);
+
+    if (source == null) return;
+
+    await SourceMethods.update(
+      source.copy(isInstalled: false, isEnabled: false),
+    );
+
+    setModules(state.modules);
   }
 
   togglePin(Source source) {

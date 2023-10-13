@@ -3,7 +3,7 @@ import '../../shared/constants/db_types.dart';
 const tableSources = '''
       CREATE TABLE ${SourceFields.tableName} (
        ${SourceFields.id} $kIntType PRIMARY KEY AUTOINCREMENT,
-       ${SourceFields.moduleId} $kTextType,
+       ${SourceFields.moduleId} $kTextType UNIQUE,
        ${SourceFields.icon} $kTextType,     
        ${SourceFields.name} $kTextType, 
        ${SourceFields.version} $kTextType, 

@@ -14,7 +14,7 @@ abstract class SourceMethods {
       final maps = await db.query(
         SourceFields.tableName,
         columns: SourceFields.values,
-        where: '${SourceFields.id} = ?',
+        where: '${SourceFields.moduleId} = ?',
         whereArgs: [id],
         limit: 1,
       );
